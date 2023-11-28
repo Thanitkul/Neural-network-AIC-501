@@ -4,7 +4,7 @@
 # Adapted by Sally Goldin, 26 September 2022
 #
 # Further adapted for Supervised and Unsupervised Machine Learning by Kane
-# Most accurate (dewtermined from another file): Hidden Layer: 5, Learning Rate: 0.900000, Epochs: 900, Accuracy: 0.952381
+# Most accurate: Hidden Layer: 5, Learning Rate: 0.900000, Epochs: 900, Accuracy: 0.952381
 
 from random import seed
 from random import random
@@ -175,43 +175,25 @@ def main():
 
 	n_inputs = len(trainset[0]) - 1
 	n_outputs = len(set([row[-1] for row in trainset]))
-	network = initialize_network(n_inputs, 5, n_outputs)
-	train_network(network, trainset, 0.9, 900, n_outputs)
-	# test making predictions with the network 
-	# print out accuracy and confusion matrix
+
+	# open the output file
+	outputfile = open("NNoutput.txt", "w")
+	# iterate through 1 - 10 hidden layers, 0.1 - 1.0 learning rate, 100 - 1000 epochs
+	# save the result into output file
+	for i in tqdm(range(1,11)):
+		for j in tqdm(range(1,11)):
+			for k in range(1,11):
+				network = initialize_network(n_inputs, i, n_outputs)
+				train_network(network, trainset, j/10, k*100, n_outputs)
+				correct = 0
+				for row in testset:
+					prediction = predict(network, row)
+					if row[-1] == prediction:
+						correct += 1
+				outputfile.write("Hidden Layer: %d, Learning Rate: %f, Epochs: %d, Accuracy: %f\n" % (i, j/10, k*100, correct/len(testset)))
 	
-	# initialize the confusion matrix
-	confusion = []
-	for i in range(n_outputs):
-		confusion.append([0 for i in range(n_outputs)])
-	correct = 0
-	for row in tqdm(testset):
-		prediction = predict(network, row)
-		expected = row[-1]
-		confusion[expected][prediction] += 1
-		if prediction == expected:
-			correct += 1
-	print("Accuracy: ", correct/len(testset))
-	print("Confusion matrix:")
-	print(confusion)
-
-	#visualize the confusion matrix
-	import matplotlib.pyplot as plt
-	import numpy as np
-	fig, ax = plt.subplots()
-	im = ax.imshow(confusion)
-	ax.set_xticks(np.arange(n_outputs))
-	ax.set_yticks(np.arange(n_outputs))
-	ax.set_xticklabels(classdict.keys())
-	ax.set_yticklabels(classdict.keys())
-	plt.setp(ax.get_xticklabels(), rotation=45, ha="right", rotation_mode="anchor")
-	for i in range(n_outputs):
-		for j in range(n_outputs):
-			text = ax.text(j, i, confusion[i][j], ha="center", va="center", color="w")
-	ax.set_title("Confusion Matrix")
-	fig.tight_layout()
-
-	plt.show()
+	# close the output file
+	outputfile.close()
 
 
 if __name__ == "__main__":
