@@ -4,6 +4,7 @@
 # Adapted by Sally Goldin, 26 September 2022
 #
 # Further adapted for Supervised and Unsupervised Machine Learning by Kane
+# Most accurate: Hidden Layer: 10, Learning Rate: 0.800000, Epochs: 900, Accuracy: 0.936508
 
 from random import seed
 from random import random
